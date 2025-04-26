@@ -1,0 +1,23 @@
+services:
+  api:
+    build: .
+    container_name: "sleep-tracker-api"
+    hostname: "sleep-tracker-api"
+    volumes:
+      - .:/app
+    ports:
+      - "3000:80"
+    env_file:
+      - .env
+  database:
+    image: postgres:15
+    container_name: "sleep-tracker-db"
+    hostname: "sleep-tracker-db"
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env
+    volumes:
+      - db_data:/var/lib/postgresql/data
+volumes:
+  db_data:
