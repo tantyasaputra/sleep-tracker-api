@@ -21,4 +21,21 @@ RSpec.describe User, type: :model do
       expect(user.errors[:email]).to include('has already been taken')
     end
   end
+
+  describe '#destroy (soft delete)' do
+    let!(:user) { create(:user) }
+
+    it 'marks the user as deleted' do
+      expect(user.deleted_at).to be_nil
+
+      user.destroy
+      user.reload
+
+      expect(user.deleted_at).not_to be_nil
+    end
+
+    it 'does not actually remove user and follows from the database' do
+      expect { user.destroy }.not_to change(User, :count)
+    end
+  end
 end
