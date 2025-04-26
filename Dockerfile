@@ -11,7 +11,7 @@ WORKDIR /app
 RUN apk update && apk add make gcc musl-dev tzdata git build-base postgresql-dev yaml-dev jemalloc
 
 # Set production environment
-ENV BUNDLE_DEPLOYMENT="1" \
+ENV BUNDLE_DEPLOYMENT="0" \
     BUNDLE_PATH="/usr/local/bundle"
 
 # Build stage: install gems and precompile
