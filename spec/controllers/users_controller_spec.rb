@@ -7,6 +7,16 @@ RSpec.describe UsersController, type: :controller do
   describe 'GET #profiles' do
     context 'with valid credentials' do
       before do
+        other_user1 = create(:user, email: 'other_user1@example.com')
+        other_user2 = create(:user, email: 'other_user2@example.com')
+        other_user3 = create(:user, email: 'other_user3@example.com')
+
+        # Following two people
+        user.follow!(other_user1)
+        user.follow!(other_user2)
+
+        # Followed by one person
+        other_user3.follow!(user)
         request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials('test@example.com', 'password123')
         get :profiles
       end
@@ -17,6 +27,14 @@ RSpec.describe UsersController, type: :controller do
 
       it 'returns the current user email' do
         expect(JSON.parse(response.body)['email']).to eq(user.email)
+      end
+
+      it 'returns the current user following' do
+        expect(JSON.parse(response.body)['following']).to eq(2)
+      end
+
+      it 'returns the current user followers' do
+        expect(JSON.parse(response.body)['followers']).to eq(1)
       end
     end
 
