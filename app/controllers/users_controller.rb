@@ -18,7 +18,7 @@ class UsersController < ApplicationController
               .offset(offset)
 
     render json: {
-      data: users.as_json(only: [:id, :email]),
+      data: users.as_json(only: [ :id, :email ]),
       meta: {
         current_page: page,
         per_page: per_page,
