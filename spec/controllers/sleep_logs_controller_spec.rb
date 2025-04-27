@@ -55,4 +55,55 @@ RSpec.describe SleepLogsController, type: :controller do
       end
     end
   end
+
+  describe "GET /sleep_logs/followings" do
+    let(:friend) { create(:user) }
+
+    before do
+      user.follow!(friend)
+
+      # Friend has some sleep logs
+      create_list(:sleep_log, 5, user: friend, sleep_at: 3.days.ago, wake_at: 2.days.ago)
+      create_list(:sleep_log, 2, user: friend, sleep_at: 10.days.ago, wake_at: 9.days.ago) # outside 7 days
+    end
+
+    it "returns sleep logs within default 7 days" do
+      get :following
+
+      expect(response).to have_http_status(:ok)
+      json = JSON.parse(response.body)
+
+      expect(json["data"].size).to eq(5)
+      expect(json["meta"]["current_page"]).to eq(1)
+      expect(json["meta"]["per_page"]).to eq(10)
+      expect(json["meta"]["total_pages"]).to eq(1)
+      expect(json["meta"]["total_count"]).to eq(5)
+
+      # Check sleep log structure
+      sleep_log = json["data"].first
+      expect(sleep_log.keys).to contain_exactly("id", "sleep_at", "wake_at", "duration", "user_id", "email")
+    end
+
+    it "returns empty if duration_days is very small" do
+      get :following, params: { duration_days: 1 }
+
+      expect(response).to have_http_status(:ok)
+      json = JSON.parse(response.body)
+
+      expect(json["data"].size).to eq(0)
+      expect(json["meta"]["total_count"]).to eq(0)
+    end
+
+    it "paginates results correctly" do
+      get :following, params: { per_page: 2, page: 2 }
+
+      expect(response).to have_http_status(:ok)
+      json = JSON.parse(response.body)
+
+      expect(json["data"].size).to eq(2) # page 2, 2 items per page
+      expect(json["meta"]["current_page"]).to eq(2)
+      expect(json["meta"]["per_page"]).to eq(2)
+      expect(json["meta"]["total_pages"]).to eq(3) # 5 items => 3 pages if 2 per page
+    end
+  end
 end
