@@ -5,14 +5,14 @@ class SleepLog < ApplicationRecord
   before_save :calculate_duration
 
   def self.clock_in(user)
-    raise HandledErrors::InvalidParamsError, 'you are already clocked in!' if user.sleep_logs.where(wake_at: nil).exists?
+    raise HandledErrors::InvalidParamsError, "you are already clocked in!" if user.sleep_logs.where(wake_at: nil).exists?
 
     user.sleep_logs.create(sleep_at: Time.current)
   end
 
   def self.clock_out(user)
     sleep_log = user.sleep_logs.where(wake_at: nil)
-    raise HandledErrors::InvalidParamsError, 'you have not clocked in!' unless sleep_log.exists?
+    raise HandledErrors::InvalidParamsError, "you have not clocked in!" unless sleep_log.exists?
 
     sleep_log.update(wake_at: Time.current)
   end
