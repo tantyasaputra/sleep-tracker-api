@@ -14,46 +14,49 @@ class SleepLogsController < ApplicationController
   end
 
   def following
-    @page = (params[:page] || 1).to_i
-    @per_page = (params[:per_page] || 10).to_i
+    page = params[:page].to_i
+    page = 1 if page <= 0
 
-    # Calculate offset
-    offset = (@page - 1) * @per_page
+    per_page = params[:per_page].to_i
+    per_page = 10 if per_page <= 0
 
-    @total_pages = (@total_count.to_f / @per_page).ceil
+    duration_days = params[:duration_days].to_i
+    duration_days = 7 if duration_days <= 0
 
-
-    previous_days =  params[:duration_days].present? ? params[:duration_days].to_i : 7
-    previous_date =  previous_days.days.ago
+    offset = (page - 1) * per_page
+    previous_date = duration_days.days.ago
+    time_range = previous_date..Time.current
 
     following_ids = @current_user.following.pluck(:id)
 
-    time_range = previous_date..Time.current
-    @total_count = SleepLog.where(user_id: following_ids)
-                           .where(sleep_at: time_range)
-                           .where.not(wake_at: nil)
-                           .count
-    binding.pry
+    sleep_logs_query = SleepLog.where(user_id: following_ids)
+                               .where(sleep_at: time_range)
+                               .where.not(wake_at: nil)
 
-    sleep_logs = SleepLog.where(user_id: following_ids)
-                         .where(sleep_at: time_range)
-                         .where.not(wake_at: nil)
-                         .limit(@per_page)
-                         .offset(offset)
+    total_count = sleep_logs_query.count
+    total_pages = (total_count.to_f / per_page).ceil
+
+    sleep_logs = sleep_logs_query
+                   .order(duration: :desc) # optional: add ordering if needed
+                   .limit(per_page)
+                   .offset(offset)
 
     render json: {
-      data: sleep_logs.map { |sl| { id: sl.id,
-                                    sleep_at: sl.sleep_at,
-                                    wake_at: sl.wake_at,
-                                    duration: sl.duration,
-                                    user_id: sl.user_id,
-                                    email: sl.user.email,
-      } },
+      data: sleep_logs.map do |sleep_log|
+        {
+          id: sleep_log.id,
+          sleep_at: sleep_log.sleep_at,
+          wake_at: sleep_log.wake_at,
+          duration: sleep_log.duration,
+          user_id: sleep_log.user_id,
+          email: sleep_log.user.email
+        }
+      end,
       meta: {
-        current_page: @page,
-        per_page: @per_page,
-        total_pages: @total_pages,
-        total_count: @total_count
+        current_page: page,
+        per_page: per_page,
+        total_pages: total_pages,
+        total_count: total_count
       }
     }
   end
