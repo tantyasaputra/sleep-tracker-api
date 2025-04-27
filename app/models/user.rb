@@ -10,6 +10,8 @@ class User < ApplicationRecord
   has_many :passive_follows, -> { active }, class_name: "Follow", foreign_key: "followed_id", dependent: :destroy
   has_many :followers, through: :passive_follows, source: :follower
 
+  has_many :sleep_logs
+
   # Scope for only active users
   scope :active, -> { where(deleted_at: nil) }
 
