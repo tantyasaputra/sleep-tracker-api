@@ -29,4 +29,18 @@ class UsersController < ApplicationController
   def profiles
     render json: { email: @current_user.email, followers: @current_user.followers.size, following: @current_user.following.size }
   end
+
+  def follow
+    other_user = User.active.find(params[:id])
+    @current_user.follow!(other_user)
+
+    render json: { code: 200, message: "successfully followed user #{other_user.email}" }
+  end
+
+  def unfollow
+    other_user = User.active.find(params[:id])
+    @current_user.unfollow!(other_user)
+
+    render json: { code: 200, message: "successfully unfollowed user #{other_user.email}" }
+  end
 end

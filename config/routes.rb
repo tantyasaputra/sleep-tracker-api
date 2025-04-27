@@ -10,5 +10,10 @@ Rails.application.routes.draw do
     collection do
       get "profiles", to: "users#profiles"
     end
+
+    member do
+      post "follow", to: "users#follow"
+      post "unfollow", to: "users#unfollow"
+    end
   end
 end
