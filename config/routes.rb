@@ -8,7 +8,7 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   resources :users, only: [] do
     collection do
-      get 'profiles', to: 'users#profiles'
+      get "profiles", to: "users#profiles"
     end
   end
 end
