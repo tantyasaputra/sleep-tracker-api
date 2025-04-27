@@ -16,4 +16,11 @@ Rails.application.routes.draw do
       post "unfollow", to: "users#unfollow"
     end
   end
+
+  resources :sleep_logs, only: [] do
+    collection do
+      post :clock_in
+      post :clock_out
+    end
+  end
 end
