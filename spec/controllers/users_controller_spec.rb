@@ -117,4 +117,85 @@ RSpec.describe UsersController, type: :controller do
       end
     end
   end
+
+  describe 'POST #follow' do
+    let!(:other_user) { create(:user, email: 'other@example.com', password: 'password123', password_confirmation: 'password123') }
+
+    before do
+      request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials('test@example.com', 'password123')
+    end
+
+    context 'when following a valid user' do
+      it 'follows the user and returns a success message' do
+        post :follow, params: { id: other_user.id }
+        expect(response.status).to eq(200)
+
+        # Check the response JSON message
+        expected_message = "successfully followed user #{other_user.email}"
+        expect(JSON.parse(response.body)['message']).to eq(expected_message)
+
+        expect(user.following?(other_user)).to be true
+      end
+    end
+
+    context 'when trying to follow the same user' do
+      it 'raises an error and does not follow' do
+        user.follow!(other_user)
+
+        post :follow, params: { id: other_user.id }
+
+        # Check the error message (this assumes you have error handling set up in your controller)
+        expect(response.status).to eq(422)
+        expect(JSON.parse(response.body)['error']).to eq("you have followed this person!")
+      end
+    end
+
+    context 'when following a invalid user' do
+      it 'follows the user and returns a success message' do
+        post :follow, params: { id: 99999 }
+
+        expect(response.status).to eq(404)
+      end
+    end
+  end
+
+  describe 'POST #unfollow' do
+    let!(:other_user) { create(:user, email: 'other@example.com', password: 'password123', password_confirmation: 'password123') }
+
+    before do
+      user.follow!(other_user)
+      request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials('test@example.com', 'password123')
+    end
+
+    context 'when unfollowing a user' do
+      it 'unfollows the user and returns a success message' do
+        post :unfollow, params: { id: other_user.id }
+
+        expect(response.status).to eq(200)
+
+        expected_message = "successfully unfollowed user #{other_user.email}"
+        expect(JSON.parse(response.body)['message']).to eq(expected_message)
+        expect(user.following?(other_user)).to be false
+      end
+    end
+
+    context 'when trying to unfollow a user not followed' do
+      it 'raises an error and does not unfollow' do
+        user.unfollow!(other_user)
+        # Try to unfollow a user that the current_user is not following
+        post :unfollow, params: { id: other_user.id }
+
+        # Check the error message (you should handle this case in your controller)
+        expect(response.status).to eq(422)
+        expect(JSON.parse(response.body)['error']).to eq("you are not following this person!")
+      end
+    end
+
+    context 'when unfollowing a invalid user' do
+      it 'follows the user and returns a success message' do
+        post :unfollow, params: { id: 99999 }
+        expect(response.status).to eq(404)
+      end
+    end
+  end
 end
