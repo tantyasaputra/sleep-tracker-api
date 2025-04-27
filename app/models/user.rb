@@ -39,6 +39,8 @@ class User < ApplicationRecord
   # Unfollow another user
   def unfollow!(other_user)
     follow = active_follows.find_by(followed_id: other_user.id)
+    raise HandledErrors::InvalidParamsError, "you are not following this person!" unless following?(other_user)
+
     follow.soft_delete if follow
   end
 
