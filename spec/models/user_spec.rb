@@ -78,16 +78,19 @@ RSpec.describe User, type: :model do
     it "does not allow following self" do
       expect {
         user.follow!(user)
-      }.not_to change { user.following.count }
+      }.to raise_error(HandledErrors::InvalidParamsError, "cannot follow yourself!")
 
       expect(user.following?(user)).to be false
     end
 
     it "does not duplicate follows" do
       user.follow!(other_user)
+
       expect {
         user.follow!(other_user)
-      }.not_to change { user.following.count }
+      }.to raise_error(HandledErrors::InvalidParamsError, "you have followed this person!")
+
+      expect(user.following?(other_user)).to be true
     end
   end
 

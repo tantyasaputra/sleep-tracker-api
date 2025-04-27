@@ -22,7 +22,8 @@ class User < ApplicationRecord
   end
 
   def follow!(other_user)
-    return if self == other_user || following?(other_user)
+    raise HandledErrors::InvalidParamsError, "cannot follow yourself!" if self == other_user
+    raise HandledErrors::InvalidParamsError, "you have followed this person!" if following?(other_user)
 
     follow = Follow.find_by(follower_id: id, followed_id: other_user.id)
 

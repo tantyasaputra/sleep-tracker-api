@@ -11,12 +11,12 @@ class ApplicationController < ActionController::API
       @current_user = User.find_by(email: username)
 
       unless @current_user.present?
-        raise AuthenticationError, "invalid user!"
+        raise HandledErrors::AuthenticationError, "invalid user!"
         return false
       end
 
       unless @current_user.authenticate(password)
-        raise AuthenticationError, "invalid password!"
+        raise HandledErrors::AuthenticationError, "invalid password!"
         return false
       end
 
