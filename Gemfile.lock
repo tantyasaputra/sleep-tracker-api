@@ -177,6 +177,7 @@ GEM
     nokogiri (1.18.8-x86_64-linux-musl)
       racc (~> 1.4)
     ostruct (0.6.1)
+    pagy (9.3.4)
     parallel (1.27.0)
     parser (3.3.8.0)
       ast (~> 2.4.1)
@@ -349,6 +350,7 @@ DEPENDENCIES
   debug
   factory_bot_rails
   kamal
+  pagy
   pg (~> 1.1)
   pry
   puma (>= 5.0)
