@@ -27,23 +27,16 @@ class SleepLogsController < ApplicationController
 
     @pagy, @records = pagy(sleep_logs, limit: per_page, page: page, overflow: :empty_page)
 
-    render json: {
-      data: @records.map do |sleep_log|
-        {
-          id: sleep_log.id,
-          sleep_at: sleep_log.sleep_at,
-          wake_at: sleep_log.wake_at,
-          duration: sleep_log.duration,
-          user_id: sleep_log.user_id,
-          email: sleep_log.user.email
-        }
-      end,
+    options = {
       meta: {
         current_page: @pagy.page,
         per_page: @pagy.limit,
         total_pages: @pagy.pages,
         total_count: @pagy.count
-      }
+      },
+      is_collection: true
     }
+
+    render json: SleepLogSerializer.new(@records, options).serializable_hash
   end
 end
