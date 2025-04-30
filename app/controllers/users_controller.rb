@@ -7,15 +7,16 @@ class UsersController < ApplicationController
 
     @pagy, @records = pagy(users, limit: per_page, page: page, overflow: :empty_page)
 
-    render json: {
-      data: @records.as_json(only: [ :id, :email ]),
+    options = {
       meta: {
         current_page: @pagy.page,
         per_page: @pagy.limit,
         total_pages: @pagy.pages,
         total_count: @pagy.count
-      }
+      },
+      is_collection: true
     }
+    render json: UserSerializer.new(@records, options).serializable_hash
   end
 
   def profiles
