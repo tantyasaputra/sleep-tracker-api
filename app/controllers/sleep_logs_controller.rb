@@ -1,6 +1,4 @@
 class SleepLogsController < ApplicationController
-  include Pagy::Backend
-  include Pagy::Frontend
   def clock_in
     sleep_log = SleepLog.clock_in(@current_user)
     render json: { message: "successfully clocked in", sleep_log: sleep_log }, status: :created

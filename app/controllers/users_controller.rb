@@ -1,29 +1,19 @@
 class UsersController < ApplicationController
   def index
-    page = params[:page].present? ? params[:page].to_i : 1
-    per_page = params[:per_page].present? ? params[:per_page] : 10
+    page = ParamHelper.positive_integer(params[:page], 1)
+    per_page = ParamHelper.positive_integer(params[:per_page], 10)
 
-    # Calculate offset
-    offset = (page - 1) * per_page
+    users = User.active.where.not(id: @current_user.id)
 
-    users_query = User.active.where.not(id: @current_user.id)
-
-    total_count = users_query.count
-    total_pages = total_count.zero? ? 0 : (total_count.to_f / per_page).ceil
-
-    users = users_query
-              .select(:id, :email)
-              .order(created_at: :desc)
-              .limit(per_page)
-              .offset(offset)
+    @pagy, @records = pagy(users, limit: per_page, page: page, overflow: :empty_page)
 
     render json: {
-      data: users.as_json(only: [ :id, :email ]),
+      data: @records.as_json(only: [ :id, :email ]),
       meta: {
-        current_page: page,
-        per_page: per_page,
-        total_pages: total_pages,
-        total_count: total_count
+        current_page: @pagy.page,
+        per_page: @pagy.limit,
+        total_pages: @pagy.pages,
+        total_count: @pagy.count
       }
     }
   end

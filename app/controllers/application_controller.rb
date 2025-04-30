@@ -1,6 +1,8 @@
 class ApplicationController < ActionController::API
   include ActionController::HttpAuthentication::Basic::ControllerMethods
   include ExceptionHandler
+  include Pagy::Backend
+  include Pagy::Frontend
 
   before_action :authenticate!
 
