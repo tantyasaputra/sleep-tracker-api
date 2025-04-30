@@ -81,7 +81,7 @@ RSpec.describe SleepLogsController, type: :controller do
 
       # Check sleep log structure
       sleep_log = json["data"].first
-      expect(sleep_log.keys).to contain_exactly("id", "sleep_at", "wake_at", "duration", "user_id", "email")
+      expect(sleep_log.keys).to contain_exactly("id", "type", "attributes")
     end
 
     it "returns empty if duration_days is very small" do
@@ -92,6 +92,19 @@ RSpec.describe SleepLogsController, type: :controller do
 
       expect(json["data"].size).to eq(0)
       expect(json["meta"]["total_count"]).to eq(0)
+    end
+
+    it "returns correct data structure" do
+      get :following
+      json = JSON.parse(response.body)
+
+      expect(json.keys).to contain_exactly('data', 'meta')
+
+      json['data'].each do |sleep_log|
+        expect(sleep_log.keys).to contain_exactly('id', 'type', 'attributes')
+        expect(sleep_log['type']).to eq('sleep_log')
+        expect(sleep_log['attributes'].keys).to contain_exactly('sleep_at', 'wake_at', 'duration', 'user_id', 'email')
+      end
     end
 
     it "paginates results correctly" do
