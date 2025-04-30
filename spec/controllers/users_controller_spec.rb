@@ -95,10 +95,17 @@ RSpec.describe UsersController, type: :controller do
         user_ids = json_response['data'].map { |user| user['id'] }
         expect(user_ids).not_to include(user.id)
       end
-      #
-      it "returns only id and email for each user" do
+
+      it "returns correct data structure" do
         json_response = JSON.parse(response.body)
-        expect(json_response['data'].first.keys).to match_array([ 'id', 'email' ])
+
+        expect(json_response.keys).to contain_exactly('data', 'meta')
+
+        json_response['data'].each do |user|
+          expect(user.keys).to contain_exactly('id', 'type', 'attributes')
+          expect(user['type']).to eq('user')
+          expect(user['attributes'].keys).to contain_exactly('email')
+        end
       end
 
       it "returns the correct pagination metadata" do
