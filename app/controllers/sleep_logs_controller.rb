@@ -16,11 +16,9 @@ class SleepLogsController < ApplicationController
   end
 
   def following
-    per_page = params[:per_page].to_i
-    per_page = 10 if per_page <= 0
-
-    duration_days = params[:duration_days].to_i
-    duration_days = 7 if duration_days <= 0
+    page = ParamHelper.positive_integer(params[:page], 1)
+    per_page = ParamHelper.positive_integer(params[:per_page], 10)
+    duration_days = ParamHelper.positive_integer(params[:duration_days], 7)
 
     time_range = duration_days.days.ago..Time.current
 
@@ -29,7 +27,7 @@ class SleepLogsController < ApplicationController
                                .where(sleep_at: time_range)
                                .where.not(wake_at: nil)
 
-    @pagy, @records = pagy(sleep_logs, limit: per_page, overflow: :empty_page)
+    @pagy, @records = pagy(sleep_logs, limit: per_page, page: page, overflow: :empty_page)
 
     render json: {
       data: @records.map do |sleep_log|
