@@ -27,13 +27,13 @@ class UsersController < ApplicationController
     other_user = User.active.find(params[:id])
     @current_user.follow!(other_user)
 
-    render json: { code: 200, message: "successfully followed user #{other_user.email}" }
+    render json: { code: 201, message: "successfully followed user #{other_user.email}" }, status: :created
   end
 
   def unfollow
     other_user = User.active.find(params[:id])
     @current_user.unfollow!(other_user)
 
-    render json: { code: 200, message: "successfully unfollowed user #{other_user.email}" }
+    render json: { code: 201, message: "successfully unfollowed user #{other_user.email}" }, status: :created
   end
 end

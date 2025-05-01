@@ -39,7 +39,7 @@ RSpec.describe SleepLogsController, type: :controller do
       it "clocks out successfully" do
         post :clock_out
 
-        expect(response).to have_http_status(:ok)
+        expect(response).to have_http_status(:created)
         json = JSON.parse(response.body)
         expect(json['message']).to eq('successfully clocked out')
       end

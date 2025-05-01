@@ -135,7 +135,7 @@ RSpec.describe UsersController, type: :controller do
     context 'when following a valid user' do
       it 'follows the user and returns a success message' do
         post :follow, params: { id: other_user.id }
-        expect(response.status).to eq(200)
+        expect(response.status).to eq(201)
 
         # Check the response JSON message
         expected_message = "successfully followed user #{other_user.email}"
@@ -178,7 +178,7 @@ RSpec.describe UsersController, type: :controller do
       it 'unfollows the user and returns a success message' do
         post :unfollow, params: { id: other_user.id }
 
-        expect(response.status).to eq(200)
+        expect(response.status).to eq(201)
 
         expected_message = "successfully unfollowed user #{other_user.email}"
         expect(JSON.parse(response.body)['message']).to eq(expected_message)
