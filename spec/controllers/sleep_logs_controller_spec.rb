@@ -126,7 +126,7 @@ RSpec.describe SleepLogsController, type: :controller do
       create(:sleep_log, user: friend, sleep_at: 6.days.ago, wake_at: 4.days.ago)
       create(:sleep_log, user: friend, sleep_at: 6.days.ago, wake_at: 5.days.ago)
 
-      get :following, params: {sort: '-duration'}
+      get :following, params: { sort: '-duration' }
 
       expect(response).to have_http_status(:ok)
       json = JSON.parse(response.body)

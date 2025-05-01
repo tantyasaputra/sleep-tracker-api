@@ -68,9 +68,9 @@ class SleepLogsController < ApplicationController
 
   private
   def sorting_param
-    sort_param = params[:sort].presence || '-sleep_at'
-    column = sort_param.sub('-', '')
-    direction = sort_param.start_with?('-') ? :desc : :asc
+    sort_param = params[:sort].presence || "-sleep_at"
+    column = sort_param.sub("-", "")
+    direction = sort_param.start_with?("-") ? :desc : :asc
 
     # Prevent SQL injection
     SleepLog.column_names.include?(column) ? { column => direction } : { sleep_at: :desc }
