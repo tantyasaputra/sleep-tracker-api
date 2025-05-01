@@ -3,7 +3,7 @@ FactoryBot.define do
     user
     sleep_at { Time.current - 1.hour }
     wake_at { Time.current }
-    duration { wake_at - sleep_at }
+    duration { 8.hour }
 
     trait :with_no_wake_time do
       wake_at { nil }
