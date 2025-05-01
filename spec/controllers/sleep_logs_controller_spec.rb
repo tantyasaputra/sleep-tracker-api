@@ -119,4 +119,37 @@ RSpec.describe SleepLogsController, type: :controller do
       expect(json["meta"]["total_pages"]).to eq(3) # 5 items => 3 pages if 2 per page
     end
   end
+
+  describe "GET /sleep_logs" do
+    before do
+      create(:sleep_log, :with_no_wake_time, user: user, sleep_at: 1.days.ago)
+      create_list(:sleep_log, 3, user: user, sleep_at: 2.days.ago, wake_at: 1.day.ago)
+      create(:sleep_log, user: user, sleep_at: 10.days.ago, wake_at: 9.days.ago) # should be excluded
+    end
+
+    it 'returns sleep logs within duration_days filter and paginated' do
+      get :index, params: {
+        page: 1,
+        per_page: 2,
+        duration_days: 7,
+        sort: '-sleep_at'
+      }
+
+      expect(response).to have_http_status(:ok)
+
+      json = JSON.parse(response.body)
+
+      expect(json['data'].size).to eq(2)
+      expect(json['meta']).to include(
+                                'current_page' => 1,
+                                'per_page' => 2,
+                                'total_pages' => 2,
+                                'total_count' => 4
+                              )
+
+      # check sorting order
+      timestamps = json['data'].map { |d| d['attributes']['sleep_at'] }
+      expect(timestamps).to eq(timestamps.sort.reverse) # descending
+    end
+  end
 end
