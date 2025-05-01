@@ -2,8 +2,8 @@ class SleepLogsController < ApplicationController
   def index
     page = ParamHelper.positive_integer(params[:page], 1)
     per_page = ParamHelper.positive_integer(params[:per_page], 10)
-    duration_days = ParamHelper.positive_integer(params[:duration_days], 7)
-    time_range = duration_days.days.ago..Time.current
+    past_days = ParamHelper.positive_integer(params[:past_days], 7)
+    time_range = past_days.days.ago..Time.current
 
     sleep_logs = SleepLog.includes([ :user ])
                          .where(user_id: @current_user.id)
@@ -41,9 +41,9 @@ class SleepLogsController < ApplicationController
   def following
     page = ParamHelper.positive_integer(params[:page], 1)
     per_page = ParamHelper.positive_integer(params[:per_page], 10)
-    duration_days = ParamHelper.positive_integer(params[:duration_days], 7)
+    past_days = ParamHelper.positive_integer(params[:past_days], 7)
 
-    time_range = duration_days.days.ago..Time.current
+    time_range = past_days.days.ago..Time.current
 
     following_ids = @current_user.following.pluck(:id)
     sleep_logs = SleepLog.includes([ :user ])

@@ -84,8 +84,8 @@ RSpec.describe SleepLogsController, type: :controller do
       expect(sleep_log.keys).to contain_exactly("id", "type", "attributes")
     end
 
-    it "returns empty if duration_days is very small" do
-      get :following, params: { duration_days: 1 }
+    it "returns empty if past_days is very small" do
+      get :following, params: { past_days: 1 }
 
       expect(response).to have_http_status(:ok)
       json = JSON.parse(response.body)
@@ -127,11 +127,11 @@ RSpec.describe SleepLogsController, type: :controller do
       create(:sleep_log, user: user, sleep_at: 10.days.ago, wake_at: 9.days.ago) # should be excluded
     end
 
-    it 'returns sleep logs within duration_days filter and paginated' do
+    it 'returns sleep logs within past_days filter and paginated' do
       get :index, params: {
         page: 1,
         per_page: 2,
-        duration_days: 7,
+        past_days: 7,
         sort: '-sleep_at'
       }
 
