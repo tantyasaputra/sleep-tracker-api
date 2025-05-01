@@ -37,5 +37,5 @@ group :development, :test do
   gem "rubocop-rails-omakase", require: false
 
   gem "shoulda-matchers"
-  gem 'simplecov', require: false
+  gem "simplecov", require: false
 end
