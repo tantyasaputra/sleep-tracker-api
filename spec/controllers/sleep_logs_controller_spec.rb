@@ -67,7 +67,7 @@ RSpec.describe SleepLogsController, type: :controller do
       create_list(:sleep_log, 2, user: friend, sleep_at: 10.days.ago, wake_at: 9.days.ago) # outside 7 days
     end
 
-    it "returns sleep logs within default 7 days" do
+    it "returns sleep logs within default past 7 days" do
       get :following
 
       expect(response).to have_http_status(:ok)
@@ -117,6 +117,28 @@ RSpec.describe SleepLogsController, type: :controller do
       expect(json["meta"]["current_page"]).to eq(2)
       expect(json["meta"]["per_page"]).to eq(2)
       expect(json["meta"]["total_pages"]).to eq(3) # 5 items => 3 pages if 2 per page
+    end
+
+    it "returns sleep with sorting order" do
+      create(:sleep_log, user: friend, sleep_at: 6.days.ago, wake_at: 1.days.ago)
+      create(:sleep_log, user: friend, sleep_at: 6.days.ago, wake_at: 2.days.ago)
+      create(:sleep_log, user: friend, sleep_at: 6.days.ago, wake_at: 3.days.ago)
+      create(:sleep_log, user: friend, sleep_at: 6.days.ago, wake_at: 4.days.ago)
+      create(:sleep_log, user: friend, sleep_at: 6.days.ago, wake_at: 5.days.ago)
+
+      get :following, params: {sort: '-duration'}
+
+      expect(response).to have_http_status(:ok)
+      json = JSON.parse(response.body)
+
+      expect(json["data"].size).to eq(10)
+      expect(json["meta"]["current_page"]).to eq(1)
+      expect(json["meta"]["per_page"]).to eq(10)
+      expect(json["meta"]["total_pages"]).to eq(1)
+
+      # check sorting order
+      duration = json['data'].map { |d| d['attributes']['duration'] }
+      expect(duration).to eq(duration.sort.reverse) # descending
     end
   end
 
