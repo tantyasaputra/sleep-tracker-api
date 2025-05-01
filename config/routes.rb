@@ -17,7 +17,7 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :sleep_logs, only: [] do
+  resources :sleep_logs, only: [ :index ] do
     collection do
       post :clock_in
       post :clock_out
