@@ -10,7 +10,7 @@ user_ids.each_with_index do |user_id, index|
   logs_size.times do
     sleep_at = rand(0..30).days.ago + rand(0..23).hours + rand(0..59).minutes
     wake_at = sleep_at + rand(1..12).hours
-    duration = ((wake_at - sleep_at) / 60).to_i
+    duration = (wake_at - sleep_at).to_i
 
     logs << {
       user_id: user_id,

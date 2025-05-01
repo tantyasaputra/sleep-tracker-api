@@ -50,6 +50,7 @@ class SleepLogsController < ApplicationController
                          .where(user_id: following_ids)
                          .where(sleep_at: time_range)
                          .where.not(wake_at: nil)
+                         .order(sorting_param)
 
     @pagy, @records = pagy(sleep_logs, limit: per_page, page: page, overflow: :empty_page)
 
@@ -67,9 +68,11 @@ class SleepLogsController < ApplicationController
 
   private
   def sorting_param
-    sort_param = params[:sort].presence || "-sleep_at"
-    direction = sort_param.start_with?("-") ? :desc : :asc
+    sort_param = params[:sort].presence || '-sleep_at'
+    column = sort_param.sub('-', '')
+    direction = sort_param.start_with?('-') ? :desc : :asc
 
-    { sleep_at: direction }
+    # Prevent SQL injection
+    SleepLog.column_names.include?(column) ? { column => direction } : { sleep_at: :desc }
   end
 end
