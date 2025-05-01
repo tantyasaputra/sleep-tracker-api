@@ -67,5 +67,4 @@ Rails.application.configure do
     Bullet.rails_logger = true     # logs to Rails log
     # Bullet.add_footer = true       # adds info to the bottom of page
   end
-
 end

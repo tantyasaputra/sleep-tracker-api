@@ -21,7 +21,7 @@ class SleepLogsController < ApplicationController
     time_range = duration_days.days.ago..Time.current
 
     following_ids = @current_user.following.pluck(:id)
-    sleep_logs = SleepLog.includes([:user])
+    sleep_logs = SleepLog.includes([ :user ])
                          .where(user_id: following_ids)
                          .where(sleep_at: time_range)
                          .where.not(wake_at: nil)

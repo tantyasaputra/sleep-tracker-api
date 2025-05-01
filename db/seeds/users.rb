@@ -10,7 +10,7 @@ users = []
 user_size.times do |i|
   users << {
     email: "user#{i}@example.com",
-    password_digest: hashed_password,
+    password_digest: hashed_password
   }
 end
 
